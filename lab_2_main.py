@@ -22,31 +22,33 @@ def calculate_risk():
     utility_heads = utility[index_heads]
     utility_tails = utility[index_tails]
 
-    # Визначення типу функції корисності (розрахунок похідної)
+    # Розрахунок дельта корисності
+    delta_utility = utility_tails - utility_heads
+
+    # Визначення типу функції корисності (розрахунок дельта корисності)
     derivative = np.diff(utility) / np.diff(money)
 
-    if np.all(derivative > 0):
+    if delta_utility >= 0:
         risk_label.config(text="Функція корисності налаштована на ризик.")
     else:
-        risk_label.config(text="Функція корисності не налаштована на ризик або є лінійною.")
+        risk_label.config(text="Функція корисності не налаштована на ризик.")
 
-    utility_heads_label.config(text=f"Корисність при ставці на орла (-1000): {utility_heads}")
-    utility_tails_label.config(text=f"Корисність при ставці на решку (+1500): {utility_tails}")
+    utility_heads_label.config(text=f"Корисність при ставці на орла: {utility_heads}")
+    utility_tails_label.config(text=f"Корисність при ставці на решку: {utility_tails}")
 
-    # Побудова графіку функції корисності
+    delta_utility_label.config(text=f"Дельта корисності: {delta_utility}")
+
+    # Побудова графіку функції корисності з точками ставок на орла і решку
     plt.figure(figsize=(8, 6))
     plt.plot(money, utility, marker='o', linestyle='-', color='b')
     plt.xlabel('Гроші')
     plt.ylabel('Корисність')
     plt.title('Функція корисності')
     plt.grid(True)
-    plt.scatter([result_heads, result_tails], [utility_heads, utility_tails], color='red')
-    plt.legend(['Функція корисності', 'Ставка на орла', 'Ставка на решку'])
+    #plt.scatter([result_heads, result_tails], [utility_heads, utility_tails], color='red')
+    #plt.legend(['Функція корисності', 'Ставка на орла та Ставка на решку'])
 
-    # Виведення графіка
-    plt.show()
-
-    # Виведення повідомлення про схильність до ризику
+    # Виведення графіка типу функції корисності
     plt.figure(figsize=(6, 4))
     plt.plot(money[1:], derivative, marker='o', linestyle='-', color='g')
     plt.axhline(0, color='gray', linestyle='--')
@@ -54,6 +56,16 @@ def calculate_risk():
     plt.ylabel('Похідна корисності')
     plt.title('Тип функції корисності')
     plt.grid(True)
+
+    # Виведення графіка delta_utility
+    plt.figure(figsize=(6, 4))
+    plt.axhline(0, color='gray', linestyle='--')
+    plt.bar(['Delta Utility'], [delta_utility], color='blue')
+    plt.xlabel('Delta Utility')
+    plt.title('Delta Utility')
+    plt.grid(True)
+
+    # Відображення всіх графіків
     plt.show()
 
 # Створення вікна
@@ -88,5 +100,8 @@ utility_heads_label.grid(row=5, columnspan=2)
 
 utility_tails_label = tk.Label(root, text="")
 utility_tails_label.grid(row=6, columnspan=2)
+
+delta_utility_label = tk.Label(root, text="")
+delta_utility_label.grid(row=7, columnspan=2)
 
 root.mainloop()
